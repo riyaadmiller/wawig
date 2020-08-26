@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>WaWiG</title>
+  </head>
+
+  {% load crispy_forms_tags %}
+
+  <body style="padding-top: 25px">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-8">
+                <h1 class="mt-2">WaWiG</h1>
+                <hr class="mt-0 mb-4">
+                {% block content %}
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button type="submit" class="btn btn-success">Get Weather</button>
+                    </form>
+                {% endblock %}
+
+                <br>
+
+                {% if error != '0' %}
+
+                    <b>{{ error }}</b>
+
+                {%  else %}
+
+                    <!--print detailed-->
+                    <table class="table table-bordered">
+                    <tr><th colspan="6">{{ city|title }}, weather taken as of now plus {{ days }} {% if days == '1' %} day {% else %} days {% endif %} </th></tr>
+                    <tr><th>Day</th><th>Average</th><th>Minimum</th><th>Maximum</th><th>Median</th><th>Humidity</th></tr>
+                    </thead>
+
+                    {% for key1, value1 in results.items %}
+
+                        {% if key1 == 'detail' %}
+                            {% for key2, value2 in value1.items %}
+                                <tr>
+                                <td>{{ key2 }}</td>
+                                {% for key3, value3 in value2.items %}
+                                    {% if key3 != 'min_max' %}
+                                        <td>{{ key3 }} {{ value3 }}</td>
+                                    {%  endif %}
+                                {% endfor %}
+                                </tr>
+
+                            {% endfor %}
+                        {% endif %}
+
+                    {% endfor %}
+
+                    </table>
+
+                    <br><!--print summary-->
+
+                    <table class="table table-bordered">
+                    <tr><th colspan="5">Summary for above period</th></tr>
+                    <tr><th>Minimum</th><th>Maximum</th><th>Median</th><th>Humidity</th><th>Average</th></tr>
+                    </thead>
+
+                    {% for key1, value1 in results.items %}
+                        {% if key1 == 'summary' %}
+                            <tr>
+                            {% for key2, value2 in value1.items %}
+                                {% if key2 != 'min_max' %}
+                                    <td>{{ key2 }} - {{ value2 }}</td>
+                                {% endif %}
+                            {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+
+                    </table>
+
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </body>
+</html>
